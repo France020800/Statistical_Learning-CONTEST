@@ -1,0 +1,25 @@
+% !TeX spellcheck = en_GB
+
+% ------------------------------- %
+
+\begin{frame}{Metrics}
+
+\begin{table}
+\sisetup{round-mode=places}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lS[round-precision=3]S[round-precision=3]S[round-precision=3]S[round-precision=3]}
+	\toprule
+	& \multicolumn{2}{c}{Diabetes} & \multicolumn{2}{c}{Apple quality} \\
+	Model & {Train score} & {Test score} & {Train score} & {Test score} \\
+	\midrule
+	AdaBoost & 0.875 & 0.76953125 & 0.93100862392201 & 0.86721680420105 \\
+	$\text{AdaBoost}_\pi$ & 0.841796875 & 0.7578125 & 0.983127109111361 & 0.887471867966992 \\
+	Model2 & 0. & 0. & 0. & 0. \\
+	Model3 & 0. & 0. & 0. & 0. \\
+	\bottomrule
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+% ------------------------------- %
