@@ -1,10 +1,10 @@
 ## Library
 library(glmnet)
 library(ggplot2)
-source("r/utils.R")
+source("utils.R")
 
 ## Dataset
-apple.data = read.csv("../../Materiale/apple_quality.csv")
+apple.data = read.csv("../datasets/apple_quality.csv")
 apple.data = na.omit(apple.data)
 apple.data$Acidity = as.numeric(apple.data$Acidity)
 apple.n <- nrow(apple.data)
@@ -22,10 +22,11 @@ x.test = as.matrix(apple.test[, 1:8])
 y.test = ifelse(apple.test$Quality == 'bad', 0, 1)
 
 ## Regularization 
-alpha = 0     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
+alpha = 0.5     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
 cv.model = cv.glmnet(x.train, y.train, family = 'binomial', alpha = alpha)
 best.lambda <- cv.model$lambda.min
 best.lambda
+plot(cv.model)
 
 # Accuracy
 predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
@@ -52,9 +53,31 @@ legend("topright",fill=mypal,rownames(cv.model$glmnet.fit$beta), xpd=FALSE, cex=
 # ElasticNet - Train acc: 0.7416573 Test acc: 0.7576894 
 
 
+## ADALASSO
+fit.0 = glm(y.train ~ x.train, family = binomial)
+initial_coefs <- coef(fit.0)
+initial_coefs <- initial_coefs[-1]
+weights <- 1 / abs(initial_coefs)
+weights_matrix <- diag(weights)
+cv.model <- cv.glmnet(x.train, y.train, family = "binomial", alpha = 1, penalty.factor = weights)
+print(coef(cv.model, s = "lambda.min"))
 
+# Accuracy
+predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
+predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
+print(table(Predicted = predicted_classes, Actual = y.train))
+accuracy = accuracy.score(y.train, predicted_classes)
+cat("Train accuracy: ", accuracy, "\n")
 
+predicted_probabilities <- predict(cv.model, newx = x.test, s = "lambda.min", type = "response")
+predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
+print(table(Predicted = predicted_classes, Actual = y.test))
+accuracy = accuracy.score(y.test, predicted_classes)
+cat("Train accuracy: ", accuracy, "\n")
 
+{plot(fit.adalasso)
+legend("topright",fill=mypal,rownames(cv.model$glmnet.fit$beta), xpd=FALSE, cex=0.8, bty = "n")
+}
 
 
 

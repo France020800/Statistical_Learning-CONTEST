@@ -1,9 +1,10 @@
 ## Library
 library(glmnet)
 library(ggplot2)
+source("utils.R")
 
 ## Dataset
-diab.data = read.csv("../../Materiale/diabetes.csv")
+diab.data = read.csv("../datasets/diabetes.csv")
 diab.n <- nrow(diab.data)
 diab.test.n <- floor(diab.n / 3)
 
@@ -55,4 +56,5 @@ mypal = c(RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(6,"Dark2
 #
 # Lasso
 #
-#
+# Train accuracy:  0.765625 
+# Test accuracy:  0.7734375 
