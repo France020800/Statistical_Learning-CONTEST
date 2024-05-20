@@ -9,6 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 source("utils.R")
 colors.biasvar <- c("#34558b", "#800080")
+
+library(RColorBrewer)
+colors.add <- colorRampPalette(brewer.pal(8,"Dark2"))(2)
 ```
 
 ## Diabetes dataset
@@ -19,6 +22,56 @@ data$Outcome <- 2 * data$Outcome - 1
 target <- which(colnames(data) == "Outcome")
 
 dataset.distrib(data$Outcome)
+
+summary(data)
+```
+
+Dataset di 768 donne native americane tra i 21 e gli 81 anni
+- Numero di gravidanze
+- Concentrazione di glucosio
+- Pressione diastolica in mmHg
+- Spessore della pelli ai tricipiti
+- Siero di insulina valutato su 2 ore
+- Body mass index
+- Ereditarietà
+- Età
+
+Variables mean from the summary
+
+```{r}
+boxplot(scale(data[,-target]))
+```
+
+```{r}
+# preprocess.mean <- c(mean(data$Glucose), mean(data$BloodPressure), mean(data$SkinThickness),
+#                      mean(data$Insulin), mean(data$BMI))
+preprocess.mean <- sapply(1:8, function(i) {mean(data[,i])})
+names(preprocess.mean) <- names(data[,-target])
+
+handle.idx <- c(2, 3, 4, 5, 6)
+# names(handle.idx) <- c("Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI")
+```
+
+Substitute values with 0 with the mean from the preprocessing
+
+```{r}
+for (i in handle.idx) {
+  data[,i][data[,i] == 0] <- preprocess.mean[i]
+}
+
+# data$Insulin[which(scale(data$Insulin) > 3.29 | scale(data$Insulin) < -3.29)] <- preprocess.mean["Insulin"]
+```
+
+Preprocessed summary
+
+```{r}
+summary(data)
+```
+
+Heat map
+
+```{r}
+heatmap(cor(data[,-target]), Colv=NA, Rowv=NA)
 ```
 
 ```{r}
@@ -30,12 +83,6 @@ train.idx <- sample(n, n - test.n, replace=FALSE)
 
 train <- data[train.idx,]
 test <- data[-train.idx,]
-```
-
-```{r}
-for (i in 1:8) {
-  print(paste(colnames(data)[i], ": ", sd(data[,i])))
-}
 ```
 
 ```{r}
@@ -133,7 +180,21 @@ adaboost <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
                      loss="exponential", type="discrete",
                      iter=M.max, nu=nu.diab, bag.frac=1)
 
+adaboost2 <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
+                     test.x=as.matrix(test[,-target]), test.y=test$Outcome,
+                     loss="exponential", type="discrete",
+                     iter=M.max, nu=0.1, bag.frac=1)
+
+adaboost3 <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
+                     test.x=as.matrix(test[,-target]), test.y=test$Outcome,
+                     loss="exponential", type="discrete",
+                     iter=M.max, nu=1, bag.frac=1)
+
 adaboost.err <- adaboost.cv(M.max, train, 5, "Outcome", lam=nu.diab)
+
+adaboost.err2 <- adaboost.cv(M.max, train, 5, "Outcome", lam=0.1)
+
+adaboost.err3 <- adaboost.cv(M.max, train, 5, "Outcome", lam=1)
 
 M.cross <- seq(M.max)[which.min(adaboost.err)]
 M.cross
@@ -148,22 +209,25 @@ plot(adaboost, kappa=FALSE, test=TRUE, cols=rainbow(dim(adaboost$model$errs)[2]+
 
 print(adaboost)
 
-# adaboost$model$errs[1:5,]
+adaboost$model$errs[1:5,]
 ```
 
 ```{r}
 ## Bias-Variance tradeoff
 # pdf("./plots/cv-adaboost-diab.pdf")
-matplot(seq(M.max), cbind(adaboost$model$errs[,1], adaboost.err),
-        type=c("l", "l"), lty=c(1, 1), lwd=3, col=colors.biasvar, log="x",
-        xlab="Rounds of boosting", ylab="Error rate", main="Bias-Variance tradeoff")
+matplot(seq(M.max), cbind(adaboost$model$errs[,1], adaboost.err,
+                          adaboost3$model$errs[,1], adaboost.err3),
+        type=c("l", "l"), lty=c(1, 1), lwd=c(3,3,1.7,1.7),
+        col=c(colors.biasvar, colors.add), log="x",
+        xlab="Rounds of boosting", ylab="Error rate", main="Bias-Variance tradeoff",
+        ylim=c(0, 0.35))
 
 # lines(adaboost$model$errs[,3], lty=1, lwd=3, col="purple")
 
 abline(v=M.cross, lty=2, lwd=3)
 
 abline(h=tree.test.err, lty=3, lwd=2)
-text(x=10, y=tree.test.err*0.94, cex=1.3,
+text(x=10, y=tree.test.err*0.96, cex=1.3,
      paste0(sum(tree$frame$var == "<leaf>"), "-node tree"))
 
 # par(new=TRUE)
@@ -172,9 +236,11 @@ text(x=10, y=tree.test.err*0.94, cex=1.3,
 # abline(h=adaboost$model$errs[1,3], lty=3, lwd=2)
 # text(x=12, y=adaboost$model$errs[1,3]*0.93, "Single stump", cex=1.3)
 
-legend(150, 0.24, legend=c("Train", "CV", paste("M*=", M.cross, sep="")),
-       col=c(colors.biasvar, "black"),
-       lty=c(1, 1, 2), lwd=3, cex=1.5, bg="white")
+legend("bottomright",
+       legend=c("Train", "CV", paste("M*=", M.cross, sep=""),
+                "Train nu=1", "CV nu=1"),
+       col=c(colors.biasvar, "black", colors.add),
+       lty=c(1,1,2,1,1), lwd=3, cex=1.4, bg="white")
 # dev.off()
 ```
 
@@ -202,8 +268,10 @@ dotchart(rev(ada.vip), main="Variable importance", xlab="Score", pch=19, pt.cex=
 # dev.off()
 ```
 
+Model summary and metrics
+
 ```{r}
-## model summary
+## summary
 print(adaboost.opt)
 summary(adaboost.opt)
 
@@ -225,7 +293,21 @@ adaboost.st <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
                         loss="exponential", type="discrete",
                         iter=M.max, nu=nu.diab, bag.frac=pi.diab)
 
+adaboost.st2 <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
+                        test.x=as.matrix(test[,-target]), test.y=test$Outcome,
+                        loss="exponential", type="discrete",
+                        iter=M.max, nu=0.1, bag.frac=pi.diab)
+
+adaboost.st3 <- ada::ada(x=as.matrix(train[,-target]), y=train$Outcome,
+                        test.x=as.matrix(test[,-target]), test.y=test$Outcome,
+                        loss="exponential", type="discrete",
+                        iter=M.max, nu=1, bag.frac=pi.diab)
+
 adaboost.st.err <- adaboost.cv(M.max, train, 5, "Outcome", nu.diab, pi.diab)
+
+adaboost.st.err2 <- adaboost.cv(M.max, train, 5, "Outcome", 0.1, pi.diab)
+
+adaboost.st.err3 <- adaboost.cv(M.max, train, 5, "Outcome", 1, pi.diab)
 
 M.cross.st <- seq(M.max)[which.min(adaboost.st.err)]
 M.cross.st
@@ -237,31 +319,36 @@ plot(adaboost.st, kappa=FALSE, test=TRUE,
 
 print(adaboost.st)
 
-# adaboost.st$model$errs[1:5,]
+adaboost.st$model$errs[1:5,]
 ```
 
 Il valore ottimo di iterazioni è superiore nel setting stocastico, chiaramente dovuto alla regolarizzazione di 1/10. Il paper originale comunque dice che ha maggiore influenza in una task di regressione, qua potrebbe inoltre esserci l'influenza del dataset non troppo grande.
 
 ```{r}
 # pdf("./plots/cv-adaboost-st-diab.pdf")
-matplot(seq(M.max), cbind(adaboost.st$model$errs[,1], adaboost.st.err),
-        type=c("l", "l"), lty=c(1, 1), lwd=3, col=colors.biasvar, log="x",
-        xlab="Rounds of boosting", ylab="Error rate", main="Bias-Variance tradeoff")
+matplot(seq(M.max), cbind(adaboost.st$model$errs[,1], adaboost.st.err,
+                          adaboost.st3$model$errs[,1], adaboost.st.err3),
+        type=c("l", "l"), lty=c(1, 1), lwd=c(3,3,1.7,1.7),
+        col=c(colors.biasvar, colors.add), log="x",
+        xlab="Rounds of boosting", ylab="Error rate", main="Bias-Variance tradeoff",
+        ylim=c(0, 0.35))
 
 # lines(adaboost.st$model$errs[,3], lty=1, lwd=3, col="purple")
 
 abline(v=M.cross.st, lty=2, lwd=3)
 
 abline(h=tree.test.err, lty=3, lwd=2)
-text(x=20, y=tree.test.err*1.04, cex=1.3,
+text(x=20, y=tree.test.err*0.96, cex=1.3,
      paste0(sum(tree$frame$var == "<leaf>"), "-node tree"))
 
 # abline(h=adaboost.st$model$errs[1,1], lty=3, lwd=2)
 # text(x=12, y=adaboost.st$model$errs[1,1]*0.96, "Single stump", cex=0.85)
 
-legend("bottomleft", legend=c("Train", "CV", paste("M*=", M.cross.st, sep="")),
-       col=c(colors.biasvar, "black"),
-       lty=c(1, 1, 2), lwd=3, cex=1.5, bg="white")
+legend("bottomleft",
+       legend=c("Train", "CV", paste("M*=", M.cross.st, sep=""),
+                "Train nu=1", "CV nu=1"),
+       col=c(colors.biasvar, "black", colors.add),
+       lty=c(1,1,2,1,1), lwd=3, cex=1.4, bg="white")
 # dev.off()
 ```
 
@@ -281,6 +368,8 @@ print(adaboost.st.opt)
 ## bias-variance tradeoff with test error
 plot(adaboost.st.opt, FALSE, TRUE)
 ```
+
+Model summary and metrics
 
 ```{r}
 ## model summary
