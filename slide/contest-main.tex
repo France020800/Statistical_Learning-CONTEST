@@ -10,7 +10,7 @@
 \usepackage{babel}
 %\geometry{}
 
-\graphicspath{{../r/plots/}}
+\graphicspath{{../r/plots/},{./Figures/}}
 
 \usepackage{booktabs}
 %\usepackage{caption}
@@ -24,9 +24,9 @@
 \SetKw{Not}{not}
 
 % -------- %
-\title{Presentation title}
-\subtitle{Presentation subtitle}
-\author{Name Surname \and Name Surname \and Name Surname}
+\title{Diagnosing Diabetes}
+\subtitle{Comparison between Logistic regression and Ensemble trees}
+\author{Francesco Marchini \and Alessandra Spinaci \and David Nardi}
 \institute[UniFi]{MSc in AI, University of Florence}
 \date{May 21, 2024}
 %\logo{\includegraphics[width=0.2\textwidth]{./Figures/logo}}
@@ -62,6 +62,8 @@
 \DeclarePairedDelimiter{\set}{\{}{\}}
 \renewcommand{\epsilon}{\varepsilon}
 
+\usepackage{subfig}
+
 \usepackage{siunitx}
 \sisetup{%
 	output-decimal-marker={.},group-separator={\,},%
@@ -77,8 +79,44 @@
 
 \tikzstyle{cloud} = [draw,ellipse,centered,text width=3.5em,text centered,
 					inner sep=0.5pt,outer sep=0pt,fill=mLightBrown!20,font=\footnotesize]
+\tikzstyle{cloud2} = [draw,ellipse,centered,text width=3em,text centered,
+					  inner sep=1.5pt,outer sep=0pt,fill=mLightBrown!20,font=\small]
+
+\tikzstyle{treenode} = [draw,circle,minimum width=1.4em,font=\footnotesize,text centered,
+						inner sep=1.2pt,outer sep=0pt]
+
+\tikzstyle{immagine} = [above right,inner sep=0pt,outer sep=0pt]
+
+%\tikzset{},
+%	testo/.style={fill=white,align=center,fill opacity=0,text opacity=1,below right,
+%		font=\scriptsize},
+%	testo1/.style={fill=white,align=center,fill opacity=0,text opacity=1,below right,
+%		font=\tiny},
+%	testo2/.style={fill=white,align=center,fill opacity=0,text opacity=1,above right,
+%		font=\tiny}}
 
 \newcommand{\maxlike}{{\tiny ML}}
+
+% ------------------------------- %
+\usepackage{listings}
+\definecolor{Rkwd}{rgb}{0.737,0.353,0.396}
+\definecolor{Rparam}{rgb}{0.333,0.667,0.333}
+\definecolor{Rnum}{rgb}{0.686,0.059,0.569}
+\definecolor{Rstr}{rgb}{0.192,0.494,0.8}
+\definecolor{Rcomm}{rgb}{0.678,0.584,0.686}
+% R
+\lstdefinestyle{Rlang}{language=R,%
+	keywordstyle=\color{Rkwd},basicstyle=\small\ttfamily,%
+	commentstyle=\color{Rcomm}\ttfamily\em,%
+	stringstyle=\color{Rstr}\rmfamily,%
+	numbers=left,numberstyle=\tiny\color{green},stepnumber=1,numbersep=5pt,%
+	showstringspaces=false,breaklines=true,frameround=ftff,%
+	frame=lines,backgroundcolor=\color{lightergray},firstnumber=last,%
+	deletekeywords={data},%
+	morekeywords={TRUE,FALSE,NULL},%
+}
+\lstset{style=Rlang,escapeinside={£!}{!£}}
+% ------------------------------- %
 
 %\usepackage{pgfpages}
 %\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]
@@ -89,11 +127,12 @@
 \maketitle
 
 % ------------------------------- %
-\input{./sections/intro.text}
-\input{./sections/logistic_regression.tex}
+\input{./Sections/intro.tex}
+\input{./Sections/logistic_regression.tex}
 \input{./Sections/sec_forest.tex}
-\input{./Sections/sec1.tex}
-\input{./Sections/sec2.tex}
+\input{./Sections/ada-theory.tex}
+\input{./Sections/adaboost.tex}
+\input{./Sections/results.tex}
 % ------------------------------- %
 
 %\appendix
@@ -107,5 +146,6 @@
 % ------------------------------- %
 
 \input{./Sections/contest-refs.tex}
+\input{./Sections/contest-backup.tex}
 
 \end{document}

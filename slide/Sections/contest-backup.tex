@@ -21,7 +21,7 @@ Initialize observation weights $w_i^{(1)}=1/N$ s.t. $\sum_{i=1}^Nw_i^{(m)}=1$\;
 \end{algorithm}}
 
 %Where the \alert{weak learner} $G_m\in\set{-1,1}$ is a CART
-Where the \alert{weak learner} $G_m\colon\R^p\to\set{-1,1}$ is a CART
+Where the \alert{weak learner} $G_m\colon\R^p\to\set{-1,1}$ is a CART Decision Tree
 
 % questa è la base di partenza
 % poi è stato collegato a concetti statistici quali: loss function, modello additivo e regressione logistica
@@ -59,6 +59,8 @@ Where the \alert{weak learner} $G_m\colon\R^p\to\set{-1,1}$ is a CART
 % stochastic gradient boosting framework, when bag.frac < 1
 % -> shrinkage added
 % -> out-of-bag fraction, on each iteration train a classifier on a different dataset sample, keep the rest as OOB
+
+Discrete AdaBoost with shrinkage and out-of-bag, as an additive model
 
 {%
 \setlength{\interspacetitleruled}{0pt}%

@@ -5,12 +5,12 @@
 \begin{column}{0.5\textwidth}
 TODO -- Formact code
 
-\texttt{alpha = 1   # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1}
+\texttt{alpha = 1   \# Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1}
 \texttt{cv.model = cv.glmnet(x.train, y.train, family = 'binomial', alpha = alpha)}
 \texttt{best.lambda <- cv.model\$lambda.min}
 \end{column}
 \begin{column}{0.5\textwidth}
-\includegraphics[width=0.85\columnwidth]{plots/cv_lambda.pdf}
+\includegraphics[width=0.85\columnwidth]{./Figures/logist/cv_lambda.pdf}
 \end{column}
 \end{columns}
 
@@ -20,12 +20,12 @@ TODO -- Formact code
 
 \vspace*{-1em}\begin{columns}[T]
 \begin{column}{0.5\textwidth}
-\includegraphics[width=0.85\columnwidth]{plots/diabetes_lasso.pdf}
-\includegraphics[width=0.7\columnwidth]{plots/variable_importance_lasso.pdf}
+\includegraphics[width=0.85\columnwidth]{./Figures/logist/diabetes_lasso.pdf}
+\includegraphics[width=0.7\columnwidth]{./Figures/logist/variable_importance_lasso.pdf}
 \end{column}
 \begin{column}{0.5\textwidth}
-\includegraphics[width=0.85\columnwidth]{plots/diabetes_ridge.pdf}
-\includegraphics[width=0.7\columnwidth]{plots/variable_importance_ridge.pdf}
+\includegraphics[width=0.85\columnwidth]{./Figures/logist/diabetes_ridge.pdf}
+\includegraphics[width=0.7\columnwidth]{./Figures/logist/variable_importance_ridge.pdf}
 \end{column}
 \end{columns}
 
@@ -35,12 +35,12 @@ TODO -- Formact code
 
 \vspace*{-1em}\begin{columns}[T]
 \begin{column}{0.5\textwidth}
-\includegraphics[width=0.85\columnwidth]{plots/diabetes_elasticnet.pdf}
-\includegraphics[width=0.7\columnwidth]{plots/variable_importance_elasticnet.pdf}
+\includegraphics[width=0.85\columnwidth]{./Figures/logist/diabetes_elasticnet.pdf}
+\includegraphics[width=0.7\columnwidth]{./Figures/logist/variable_importance_elasticnet.pdf}
 \end{column}
 \begin{column}{0.5\textwidth}
-\includegraphics[width=0.85\columnwidth]{plots/diabetes_adalasso.pdf}
-\includegraphics[width=0.7\columnwidth]{plots/variable_importance_adalasso.pdf}
+\includegraphics[width=0.85\columnwidth]{./Figures/logist/diabetes_adalasso.pdf}
+\includegraphics[width=0.7\columnwidth]{./Figures/logist/variable_importance_adalasso.pdf}
 \end{column}
 \end{columns}
 
@@ -50,7 +50,7 @@ TODO -- Formact code
     \begin{table}
 \sisetup{round-mode=places}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{lS[round-precision=4]S[round-precision=4]S[round-precision=4]S[round-precision=4]}
+\begin{tabular}{lS[round-precision=4]S[round-precision=4]S[round-precision=4]}
 	Model & {Train score} & {Test score} & {\(\lambda\)} \\
 	\midrule
 	Lasso & 0.7714844 & 0.7695312 & 0.005678404 \\

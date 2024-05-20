@@ -4,7 +4,7 @@
 %% Dataset, fitting, results %%
 % ------------------------------- %
 
-\begin{frame}{Fit AdaBoost (diabetes)}
+\begin{frame}{Fit AdaBoost}
 
 %\hspace{-1em}
 %\begin{figure}
@@ -21,24 +21,26 @@
 	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-diab.pdf}
 \end{column}
 \hspace{-1.3ex}\begin{column}{0.515\textwidth}
-	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-diab.pdf}
+	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-st-diab.pdf}
 \end{column}
 \end{columns}
 
 \end{frame}
 
-\begin{frame}{Fit AdaBoost (apple quality)}
+% col bagging ha bisogno di maggiori iterazioni prima di arricare all'overfitting (anche se nel boosting non si verifica effettivamente, è solo teorico)
 
-\begin{columns}[T]
-\hspace{-2.3em}\begin{column}{0.515\textwidth}
-	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-apple.pdf}
-\end{column}
-\hspace{-1.3ex}\begin{column}{0.515\textwidth}
-	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-apple.pdf}
-\end{column}
-\end{columns}
-
-\end{frame}
+%\begin{frame}{Fit AdaBoost (apple quality)}
+%
+%\begin{columns}[T]
+%\hspace{-2.3em}\begin{column}{0.515\textwidth}
+%	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-apple.pdf}
+%\end{column}
+%\hspace{-1.3ex}\begin{column}{0.515\textwidth}
+%	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-st-apple.pdf}
+%\end{column}
+%\end{columns}
+%
+%\end{frame}
 
 % ------------------------------- %
 
@@ -95,12 +97,12 @@
 
 
 
-\begin{frame}{Variable importance (diabetes)}
+\begin{frame}{Variable importance}
 
 \begin{columns}[T]
 \hspace{-2.5em}\begin{column}{0.515\textwidth}
 	% boosting setting
-	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-st0-diab.pdf}
+	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-diab.pdf}
 \end{column}
 \hspace{-1.3ex}\begin{column}{0.515\textwidth}
 	% stochastic setting
@@ -110,20 +112,45 @@
 
 \end{frame}
 
-\begin{frame}{Variable importance (apple quality)}
 
-\begin{columns}[T]
-\hspace{-2.5em}\begin{column}{0.515\textwidth}
-	% boosting setting
-	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-st0-apple.pdf}
-\end{column}
-\hspace{-1.3ex}\begin{column}{0.515\textwidth}
-	% stochastic setting
-	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-st1-apple.pdf}
-\end{column}
-\end{columns}
 
-\end{frame}
+%\begin{frame}{Variable importance (apple quality)}
+%
+%\begin{columns}[T]
+%\hspace{-2.5em}\begin{column}{0.515\textwidth}
+%	% boosting setting
+%	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-apple.pdf}
+%\end{column}
+%\hspace{-1.3ex}\begin{column}{0.515\textwidth}
+%	% stochastic setting
+%	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-st1-apple.pdf}
+%\end{column}
+%\end{columns}
+%
+%\end{frame}
+
+
+
+%\begin{frame}%{All models variable importance}
+%
+%% change plot title with model name
+%% remove xlab (from R or just trim it)
+%
+%\vspace*{-0.5em}
+%\begin{columns}[T]
+%\hspace{1em}\begin{column}{0.515\textwidth}
+%	% boosting setting
+%	\includegraphics[width=0.9\columnwidth]{../r/plots/vip-adaboost-apple.pdf}\vspace{-1em}
+%	\includegraphics[width=0.9\columnwidth]{../r/plots/vip-adaboost-apple.pdf}
+%\end{column}
+%\hspace{-1.3ex}\begin{column}{0.515\textwidth}
+%	% stochastic setting
+%	\includegraphics[width=0.9\columnwidth]{../r/plots/vip-adaboost-st1-apple.pdf}\vspace{-1em}
+%	\includegraphics[width=0.9\columnwidth]{../r/plots/vip-adaboost-st1-apple.pdf}
+%\end{column}
+%\end{columns}
+%
+%\end{frame}
 
 %\begin{frame}{Variable importance}
 %
