@@ -1,0 +1,298 @@
+---
+title: "Random Forest"
+output: html_notebook
+output: 
+  html_document: 
+    fig_width: 8
+---
+Ensemble trees: RANDOM FOREST combine Bagging with random selections of predictors
+
+# DIABETES DATASET
+The objective is to predict based on diagnostic measurements whether a patient has diabetes.
+
+Several constraints:all patients here are females at least 21 years old of Pima Indian heritage.
+- Pregnancies: Number of times pregnant
+- Glucose: Plasma glucose concentration a 2 hours in an oral glucose tolerance test
+- BloodPressure: Diastolic blood pressure (mm Hg)
+- SkinThickness: Triceps skin fold thickness (mm)
+- Insulin: 2-Hour serum insulin (mu U/ml)
+- BMI: Body mass index (weight in kg/(height in m)^2)
+- DiabetesPedigreeFunction: Diabetes pedigree function
+- Age: Age (years)
+- Outcome: Class variable (0 or 1) -> class value 1 is interpreted as "tested positive for
+diabetes"
+
+```{r}
+Diabetes <- read.csv("C:\\Users\\Alessandra\\Desktop\\AI\\STATISTICAL LEARNING\\archive\\diabetes.csv")
+```
+
+```{r}
+library(randomForest)
+
+preprocess.mean <- sapply(1:8, function(i) {mean(Diabetes[,i])})
+handle.idx <- c(2, 3, 4, 5, 6)
+
+for (i in handle.idx) {
+  Diabetes[,i][Diabetes[,i] == 0] <- preprocess.mean[i]
+}
+
+# Set the test set
+
+diab.n <- nrow(Diabetes)
+diab.test.n <- floor(diab.n/3)
+
+set.seed(111)
+diab.train.idx <- sample(diab.n, diab.n - diab.test.n, replace = FALSE)
+
+D.train <- Diabetes[diab.train.idx,]
+D.test <- Diabetes[-diab.train.idx,]
+
+p <- ncol(Diabetes)
+```
+
+## RF for Classification
+
+```{r}
+library(ggplot2)
+library(MASS)
+
+# model selection
+
+set.seed(111)
+RF2 <- randomForest(factor(Outcome) ~ ., data = D.train, importance=TRUE, mtry=sqrt(8))
+
+which.min(RF2$err.rate[,"OOB"])
+min(RF2$err.rate[,"OOB"])
+
+print(RF2)
+
+############################
+oob.error.rates <- RF2$err.rate[,"OOB"]
+neg.error.rates <- RF2$err.rate[,"0"]
+pos.error.rates <- RF2$err.rate[,"1"]
+
+pdf("diabete_forest_error3.pdf", width = 8)
+
+plot(1:length(oob.error.rates), oob.error.rates, type = "l", col = "#34558b", 
+     xlab = "Number of Trees", ylab = "Error Rate", main = "Random Forest OOB Error", ylim = c(0.1, 0.6), lwd = 1.5)
+lines(1:length(pos.error.rates), pos.error.rates, type = "l", col = "coral", lwd = 1.5)
+lines(1:length(neg.error.rates), neg.error.rates, type = "l", col = "#568203", lwd = 1.5)
+grid(nx = NULL, ny = NULL, col = "gray")
+
+abline(v=111, lwd = 1.5, lty = 2)
+
+legend("topright", legend = c("OOB Error", "Tested Positive (1) Error", "Tested Negative (0) Error"), col = c("#34558b", "coral", "#568203"), lty = 1, lwd = 1.5) 
+
+dev.off()
+
+###############################
+# re-learning
+set.seed(111)
+
+RF.opt <- randomForest(factor(Outcome) ~ ., data = D.train, importance=TRUE, mtry=sqrt(8), ntree=111)
+print(RF.opt)
+
+###############################
+```
+
+## Variable importance
+
+At each split in each tree, the improvement in the split-criterion is the
+importance measure attributed to the splitting variable, and is accumulated
+over all the trees in the forest separately for each variable.
+
+```{r}
+library(rfPermute)
+
+# variable importance for classification
+rfPermute::importance(RF2)
+randomForest::importance(RF2)
+RF2$importance
+RF.opt$importance
+##############
+pdf("diabete_var_imp3.pdf", width = 9, height = 5)
+randomForest::varImpPlot(RF.opt, main="mtry = 3", pch = 19)
+dev.off()
+############
+
+
+```
+
+## Accuracy for train data
+
+Instead of relying on one decision tree, the random forest takes the prediction from each tree and based on the majority votes of predictions, it predicts the final output.
+
+```{r}
+library(ModelMetrics)
+library(rfPermute)
+
+#RF2$confusion
+TP1 <- RF2$confusion[1,1]
+TN1 <- RF2$confusion[2,2]
+FP1 <- RF2$confusion[1,2]
+FN1 <- RF2$confusion[2,1]
+accuracy1 <- (TP1 + TN1) / (TP1 + TN1 + FP1 + FN1)
+print(paste("Accuracy randomForest$confusion:", accuracy1))
+
+cat("\n")
+
+## Accuracy for train data OPT
+TP1 <- RF.opt$confusion[1,1]
+TN1 <- RF.opt$confusion[2,2]
+FP1 <- RF.opt$confusion[1,2]
+FN1 <- RF.opt$confusion[2,1]
+accuracy1 <- (TP1 + TN1) / (TP1 + TN1 + FP1 + FN1)
+print(paste("Accuracy randomForest opt:", accuracy1))
+```
+
+## Accuracy for test data
+
+```{r}
+predictions <- predict(RF2, newdata = D.test)
+
+# Calcolare la matrice di confusione
+confusion_matrix <- table(predictions, D.test$Outcome)
+print("Confusion matrix:")
+print(confusion_matrix)
+
+TP <- confusion_matrix[1,1]
+TN <- confusion_matrix[2,2]
+FP <- confusion_matrix[1,2]
+FN <- confusion_matrix[2,1]
+
+accuracy.test <- (TP + TN) / (TP + TN + FP + FN)
+cat("\n")
+print(paste("Accuracy from predictions:", accuracy.test))
+
+
+
+predictions.opt <- predict(RF.opt, newdata = D.test)
+
+# Calcolare la matrice di confusione
+confusion_matrix <- table(predictions.opt, D.test$Outcome)
+print("Confusion matrix:")
+print(confusion_matrix)
+
+TP <- confusion_matrix[1,1]
+TN <- confusion_matrix[2,2]
+FP <- confusion_matrix[1,2]
+FN <- confusion_matrix[2,1]
+
+accuracy.test <- (TP + TN) / (TP + TN + FP + FN)
+cat("\n")
+print(paste("Accuracy from predictions optimal:", accuracy.test))
+
+```
+
+## Find optimal oob error
+
+```{r}
+oob.values <- vector(length = 10)
+
+set.seed(111)
+for(i in 1:8){
+  temp.RF <- randomForest(factor(Outcome) ~ ., data = D.train, mtry = i, ntree = 500)
+  oob.values[i] <- temp.RF$err.rate[nrow(temp.RF$err.rate), 1]
+}
+
+oob.values
+min(oob.values[1:8])
+
+################
+model1 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 1)
+plot(1:length(model1$err.rate[,"OOB"]), model1$err.rate[,"OOB"], type = "l", col = "#34558b", 
+     xlab = "Number of Trees", ylab = "Error Rate", main = "Random Forest OOB Error", ylim = c(0.228, 0.32))
+
+model2 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 2)
+lines(1:length(model2$err.rate[,"OOB"]), model2$err.rate[,"OOB"], type = "l", col = "coral")
+
+model3 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 3)
+lines(1:length(model3$err.rate[,"OOB"]), model3$err.rate[,"OOB"], type = "l", col = "orange",)
+
+model4 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 4)
+lines(1:length(model4$err.rate[,"OOB"]), model4$err.rate[,"OOB"], type = "l", col = "red")
+
+model5 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 5)
+lines(1:length(model5$err.rate[,"OOB"]), model5$err.rate[,"OOB"], type = "l", col = "pink")
+
+model6 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 6)
+lines(1:length(model6$err.rate[,"OOB"]), model6$err.rate[,"OOB"], type = "l", col = "violet")
+
+model7 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 7)
+lines(1:length(model7$err.rate[,"OOB"]), model7$err.rate[,"OOB"], type = "l", col = "yellow")
+
+model8 <- randomForest(factor(Outcome) ~ ., data = D.train, ntree = 500, mtry = 8)
+lines(1:length(model8$err.rate[,"OOB"]), model8$err.rate[,"OOB"], type = "l", col = "black")
+
+legend("topright", legend = c("mtry=1", "mtry=2","mtry=3","mtry=4","mtry=5","mtry=6","mtry=7","mtry=8"), col = c("#34558b", "coral", "orange", "green", "pink", "violet", "yellow", "black"), lty = 1, lwd = 1.5) 
+##############
+
+############################
+print(model4)
+cat("\n")
+which.min(model4$err.rate[,"OOB"])
+min(model4$err.rate[,"OOB"])
+cat("\n")
+
+oob.error.rates <- model4$err.rate[,"OOB"]
+neg.error.rates <- model4$err.rate[,"0"]
+pos.error.rates <- model4$err.rate[,"1"]
+
+pdf("diabete_forest_error4.pdf", width = 8)
+
+plot(1:length(oob.error.rates), oob.error.rates, type = "l", col = "#34558b", 
+     xlab = "Number of Trees", ylab = "Error Rate", main = "Random Forest OOB Error", ylim = c(0.1, 0.6), lwd = 1.5)
+lines(1:length(pos.error.rates), pos.error.rates, type = "l", col = "coral", lwd = 1.5)
+lines(1:length(neg.error.rates), neg.error.rates, type = "l", col = "#568203", lwd = 1.5)
+grid(nx = NULL, ny = NULL, col = "gray")
+abline(v=136, lwd = 1.5, lty = 2)
+
+legend("topright", legend = c("OOB Error", "Tested Positive (1) Error", "Tested Negative (0) Error"), col = c("#34558b", "coral", "#568203"), lty = 1, lwd = 1.5) 
+
+dev.off()
+###############################
+# re-learning
+set.seed(111)
+
+model4.opt <- randomForest(factor(Outcome) ~ ., data = D.train, importance=TRUE, mtry=4, ntree=136)
+print(model4.opt)
+
+###############
+
+##############
+pdf("diabete_var_imp4.pdf", width = 9, height = 5)
+randomForest::varImpPlot(model4.opt, main="mtry = 4", pch = 19)
+dev.off()
+############
+
+# accuracy train
+TP1 <- model4.opt$confusion[1,1]
+TN1 <- model4.opt$confusion[2,2]
+FP1 <- model4.opt$confusion[1,2]
+FN1 <- model4.opt$confusion[2,1]
+accuracy1 <- (TP1 + TN1) / (TP1 + TN1 + FP1 + FN1)
+print(paste("Accuracy randomForest optimal:", accuracy1))
+
+
+#accuracy test
+predictions.opt4 <- predict(model4.opt, newdata = D.test)
+
+# Calcolare la matrice di confusione
+confusion_matrix <- table(predictions.opt4, D.test$Outcome)
+print("Confusion matrix:")
+print(confusion_matrix)
+
+TP <- confusion_matrix[1,1]
+TN <- confusion_matrix[2,2]
+FP <- confusion_matrix[1,2]
+FN <- confusion_matrix[2,1]
+
+accuracy.test <- (TP + TN) / (TP + TN + FP + FN)
+cat("\n")
+print(paste("Accuracy from predictions optimal:", accuracy.test))
+##############
+
+```
+
+
+
