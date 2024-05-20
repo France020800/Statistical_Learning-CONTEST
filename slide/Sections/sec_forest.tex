@@ -6,11 +6,11 @@
 
 \begin{frame}{Random Forest for Classification}
 
-{\footnotesize Package \texttt{\{randomForest\}}\vspace{-1ex}
+{\small Package \texttt{\{randomForest\}}\vspace{-1.5ex}
 \begin{itemize}\setlength{\itemsep}{-0.5ex}
-	\item \texttt{randomForest(formula, data={\color{blue}NULL}, ntree={\color{red}500}, mtry={\color{blue}sqrt}(p), importance={\color{red}TRUE}, \dots)}
-	\item \texttt{importance(x, type={\color{blue}NULL}, class={\color{blue}NULL}, \dots)}
-    \item \texttt{varImpPlot(x, sort={\color{red}TRUE}, \dots)}
+	\item \lstinline|randomForest(formula, data=NULL, ntree=500, mtry=sqrt(p), importance=TRUE,|\texttt{\dots)}
+	\item \lstinline|importance(x, type=NULL, class=NULL,|\texttt{\dots)}
+    \item \lstinline|varImpPlot(x, sort=TRUE,|\texttt{\dots)}
     \item \texttt{x\$confusion}
     \item \texttt{x\$err.rate}
 \end{itemize}}
@@ -32,24 +32,24 @@
 \begin{column}{0.35\textwidth}
 
 {\footnotesize \begin{itemize}
-    \item p = 8
-    \item mtry = $\sqrt{p} \simeq 3$
-    \item ntree = 500
-    \item OOB estimate error rate: $24.41\%$
+	\item $p$ = 8
+	\item \texttt{mtry} = $\sqrt{p} \simeq 3$
+	\item \texttt{ntree} = 500
+	\item OOB estimate error rate: $24.41\%$
 \end{itemize}}
 
 \vspace{0.5cm}
 
 \; Model selection:
 {\footnotesize \begin{itemize}
-\item ntree = 111
-    \item min OOB error rate = 0.2343
+	\item \texttt{ntree} = 111
+	\item min OOB error rate = 0.2343
 \end{itemize}}
 
 \end{column}
 \begin{column}{0.75\textwidth}
 \begin{figure}
-\includegraphics[width=1.05\columnwidth]{slide/Figures/forest/diabete_forest_error3.pdf}
+\includegraphics[width=1.05\columnwidth]{./Figures/forest/diabete_forest_error3.pdf}
 \end{figure}
 \end{column}
 \end{columns}
@@ -62,24 +62,24 @@
 \begin{columns}
 \begin{column}{0.35\textwidth}
 {\footnotesize \begin{itemize}
-    \item p = 8
-    \item mtry = 4 
-    \item ntree = 500
-    \item OOB estimate error rate: $25\%$
+	\item $p$ = 8
+	\item \texttt{mtry} = 4 
+	\item \texttt{ntree} = 500
+	\item OOB estimate error rate: $25\%$
 \end{itemize}}
 
 \vspace{0.5cm}
 
 \; Model selection:
 {\footnotesize \begin{itemize}
-    \item ntree = 136
-    \item min OOB error rate = 0.2226
+	\item \texttt{ntree} = 136
+	\item min OOB error rate = 0.2226
 \end{itemize}}
 
 \end{column}
 \begin{column}{0.75\textwidth}
 \begin{figure}
-\includegraphics[width=1.05\columnwidth]{slide/Figures/forest/diabete_forest_error4.pdf}
+\includegraphics[width=1.05\columnwidth]{./Figures/forest/diabete_forest_error4.pdf}
 \end{figure}
 \end{column}
 \end{columns}
@@ -88,11 +88,11 @@
 
 % ------------------------------- %
 
-\begin{frame}{Variable Importance}
+\begin{frame}%{Variable Importance}
 
 \begin{figure}
-	\hspace*{-1.5em}\includegraphics[width=0.88\textwidth, height=0.38\columnwidth]{slide/Figures/forest/diabete_var_imp3.pdf}
-	\hspace*{-1.5em}\includegraphics[width=0.88\textwidth, height=0.38\columnwidth]{slide/Figures/forest/diabete_var_imp4.pdf}
+\hspace*{-1.5em}\includegraphics[width=0.78\textwidth]{./Figures/forest/diabete_var_imp3.pdf}
+\hspace*{-1.5em}\includegraphics[width=0.78\textwidth]{./Figures/forest/diabete_var_imp4.pdf}
 \end{figure}
 \end{frame}
 

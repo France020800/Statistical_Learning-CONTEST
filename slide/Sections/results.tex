@@ -23,15 +23,20 @@
 
 \begin{table}
 \sisetup{round-mode=places}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lS[round-precision=4]S[round-precision=4]}
+\resizebox{0.9\textwidth}{!}{
+\vspace*{-1em}\begin{tabular}{lS[round-precision=4]S[round-precision=4]}
 	\toprule
 	Model & {Train score} & {Test score} \\
 	\midrule
 	CART & 0.783203125 & 0.734375 \\
-	AdaBoost & 0.88671875 & 0.765625 \\
+	AdaBoost & 0.8867 & 0.765625 \\
 	$\text{AdaBoost}_\pi$ & 0.84375 & 0.75 \\
-	Random Forest & 0.755859375 & 0.7578125 \\
+	$\text{Random Forest}_{\texttt{mtry}=3}$ & 0.765625 & 0.75 \\
+	$\text{Random Forest}_{\texttt{mtry}=4}$ & 0.75390625 & 0.765625 \\
+	Lasso & 0.7714844 & 0.7695312 \\
+	Ridge & 0.7695312 & 0.765625 \\
+	ElasticNet & 0.7734375 & 0.7695312 \\
+	AdaLasso & 0.7714844 & 0.7695312 \\
 	\bottomrule
 \end{tabular}}
 \end{table}

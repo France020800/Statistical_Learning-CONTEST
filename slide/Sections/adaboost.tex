@@ -20,8 +20,8 @@
 \hspace{-2.3em}\begin{column}{0.515\textwidth}
 	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-diab.pdf}
 \end{column}
-\hspace{-1.3ex}\begin{column}{0.515\textwidth}
-	\includegraphics[width=1.21\columnwidth]{../r/plots/cv-adaboost-st-diab.pdf}
+\hspace{-1.2ex}\begin{column}{0.515\textwidth}
+	\includegraphics[width=1.21\columnwidth,trim=0.75cm 0 0 0,clip]{../r/plots/cv-adaboost-st-diab.pdf}
 \end{column}
 \end{columns}
 
@@ -99,6 +99,9 @@
 
 \begin{frame}{Variable importance}
 
+% criterio basato sull'influenza di ogni variabile nel ridurre la loss function
+% per ogni variabile viene fatta la media su tutte le volte che è scelta per partizionare una regione
+
 \begin{columns}[T]
 \hspace{-2.5em}\begin{column}{0.515\textwidth}
 	% boosting setting
@@ -106,6 +109,7 @@
 \end{column}
 \hspace{-1.3ex}\begin{column}{0.515\textwidth}
 	% stochastic setting
+	% averaged over 30 adaboost runs
 	\includegraphics[width=1.21\columnwidth]{../r/plots/vip-adaboost-st1-diab.pdf}
 \end{column}
 \end{columns}

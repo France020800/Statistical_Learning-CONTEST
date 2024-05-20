@@ -97,7 +97,7 @@
 
 
 
-\begin{frame}{The idea behind AdaBoost}
+\begin{frame}{The idea behind AdaBoost (Discrete AdaBoost)}
 %
 \begin{columns}[T]
 \begin{column}{0.48\textwidth}
@@ -125,13 +125,15 @@
 	\draw[-stealth] ($(M.east) + (0.15,0)$) to (GM);
 	
 	%	\node[rectangle,fill=pink!80] (G) at (1.5,-6) {$G(x)=\sign\Bigl(\sum_{m=1}^M\beta_mG_m(x)\Bigr)$};
-	\node[rectangle,fill=mLightGreen!20,font=\large] (G) at (1.6,-6.2) {$G(x)=\sign\Bigl(\sum_{m=1}^M\lambda\alpha_mG_m(x)\Bigr)$};
+	\node[rectangle,fill=mLightGreen!20,font=\large] (G) at (1.6,-6.2) {$G(x)=\sign\Bigl(\sum_{m=1}^M\alpha_mG_m(x)\Bigr)$};
 	%	\draw[-stealth] (GM) to (G);
 \end{tikzpicture}
 \end{figure}
 \end{column}
 \begin{column}{0.48\textwidth}
-\vspace{1.2em}
+\vspace{1em}
+Encoding $\mathcal{Y}\in\set{-1,1}$
+
 Base classifier $G_m(x)$ (CART)
 \begin{figure}
 %\includegraphics[width=0.3\textwidth,page=1]{./Figures/drawings/drawings.pdf}
@@ -148,7 +150,7 @@ Base classifier $G_m(x)$ (CART)
 \end{tikzpicture}
 \end{figure}
 
-\vspace{1.5em}
+\vspace{1em}
 Misclassification rate:\vspace{-1ex}
 \[
 \overline{\text{err}}=\frac{1}{N}\sum_{i=1}^N\mathbb{I}(y_i\neq G(x_i))
@@ -158,7 +160,7 @@ Misclassification rate:\vspace{-1ex}
 	\tikzset{help lines/.append style=pink}
 %	\draw [help lines] (-2,-1) grid (2,1); \node[draw,circle] at (0,0) {};
 
-	\draw[-stealth,bend right=35,thick] (-2,0) to (1.7,1.6);
+	\draw[-stealth,bend right=35,thick] (-2,0.3) to (1.7,1.6);
 \end{tikzpicture}
 
 \end{column}
@@ -169,7 +171,7 @@ Misclassification rate:\vspace{-1ex}
 % ------------------------------- %
 
 \begin{frame}{AdaBoost as an additive model and stochastic setting}
-%
+% modello additivo perché in ogni albero c'è soltanto una variabile
 \begin{columns}[T]
 \begin{column}{0.48\textwidth}
 \begin{figure}
@@ -202,7 +204,7 @@ Misclassification rate:\vspace{-1ex}
 	\begingroup\linespread{0.9}
 	\node[font=\footnotesize,text width=4em,centered,text centered,inner sep=0pt] (pi) at (2.8,-2.6) {dataset random subsample};
 	\endgroup
-	\draw[-latex] (pi) to ($(m2.east) + (-0.25,-0.1)$);
+	\draw[-stealth] (pi) to ($(m2.east) + (-0.25,-0.1)$);
 \end{tikzpicture}
 \end{figure}
 \end{column}
@@ -216,13 +218,18 @@ Journey to the final classifier:
 	\item Regularization with early stopping and shrinkage
 	\item \alert{Re-weighting} of a bootstrapped fraction of the training data  % permette all'algoritmo di concentrarsi sugli esempi più difficili da classificare, quindi di questi esempi viene aumentato il peso
 \end{itemize}}
+%$f_m(x)$ prediction function
+
+%$\lambda$ shrinkage coefficient
+
+
 \vspace{0.8em}
 Exponential loss function:\vspace{-1ex}
 \[L(y,f(x))=\exp(-yf(x))\]
 %\begin{figure}
 %\centering
 %\begin{tikzpicture}
-%	\begin{axis}[xlabel=$yf(x)$,ylabel={$L$},axis lines=middle,enlargelimits,width=0.9\textwidth]
+%	\begin{axis}[xlabel=$yf(x)$,ylabel={$L$},axis lines=middle,enlargelimits,width=1.2\textwidth]
 %		\addplot[samples=200,blue,smooth] {exp(-x)};
 %		%\addplot[dashed] {1};
 %%		\addplot [black, mark=-, nodes near coords=$\log(2)$, font={\scriptsize}, every node near coord/.style={anchor=180}] coordinates {(0,{ln(2)})};
@@ -241,25 +248,35 @@ Exponential loss function:\vspace{-1ex}
 
 \begin{columns}[T]
 \begin{column}{0.5\textwidth}
-Function \texttt{ada} arguments:
+Function \texttt{ada} arguments:\vspace{-1ex}
 {\small\begin{itemize}
 	\setlength{\itemsep}{-0.8ex}
 	\item \texttt{loss}: boosting loss function
 	\item \texttt{type}: AdaBoost version
 	\item \texttt{iter}: boosting rounds
 	\item \texttt{nu}: shrinkage coefficient $\lambda$
-	\item \texttt{bag.frac}: subsample fraction
+	\item \texttt{bag.frac}: in-bag fraction \numlist{1;0.5}
 \end{itemize}}
 \end{column}
 \begin{column}{0.5\textwidth}
-	Journey to the final classifier:
-	{\small\begin{itemize}
-	\setlength{\itemsep}{-0.8ex}
-	\item Linear combination of \alert{weak learners} (additive model)
-	\item Adaptively build up complexity, through a prediction function
-	\item Regularization with early stopping and shrinkage
-	\item \alert{Re-weighting} of a subsample of the training data  % permette all'algoritmo di concentrarsi sugli esempi più difficili da classificare, quindi di questi esempi viene aumentato il peso
-	\end{itemize}}
+%Journey to the final classifier:
+%{\small\begin{itemize}
+%\setlength{\itemsep}{-0.8ex}
+%\item Linear combination of \alert{weak learners} (additive model)
+%\item Adaptively build up complexity, through a prediction function
+%\item Regularization with early stopping and shrinkage
+%\item \alert{Re-weighting} of a subsample of the training data  % permette all'algoritmo di concentrarsi sugli esempi più difficili da classificare, quindi di questi esempi viene aumentato il peso
+%\end{itemize}}
+\begin{figure}
+% quando è classificato correttamente y e f(x) avranno segno concorde, la funzione andrà a 0
+% quando il label non è corretto, il segno discorde manda la funzione a infinito
+\begin{tikzpicture}
+\begin{axis}[xlabel=$yf(x)$,ylabel={$L(y,f(x))$},axis lines=middle,enlargelimits,width=1.1\textwidth,tick label style={font=\scriptsize}]
+	\addplot[samples=200,blue,smooth,thick] {exp(-x)};
+	%\addplot[dashed] {1};
+\end{axis}
+\end{tikzpicture}
+\end{figure}
 \end{column}
 \end{columns}
 
