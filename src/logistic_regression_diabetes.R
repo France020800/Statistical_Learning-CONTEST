@@ -6,6 +6,13 @@ source("utils.R")
 ## Dataset
 diab.data = read.csv("../datasets/diabetes.csv")
 diab.n <- nrow(diab.data)
+preprocess.mean <- sapply(1:8, function(i) {mean(diab.data[,i])})
+handle.idx <- c(2, 3, 4, 5, 6)
+
+for (i in handle.idx) {
+  diab.data[,i][diab.data[,i] == 0] <- preprocess.mean[i]
+}
+
 diab.test.n <- floor(diab.n / 3)
 
 set.seed(111)
@@ -21,21 +28,29 @@ y.train = diab.train$Outcome
 
 ## Regularization
 set.seed(111)
-alpha = 1     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
+alpha = 0.5     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
 cv.model = cv.glmnet(x.train, y.train, family = 'binomial', alpha = alpha)
 best.lambda <- cv.model$lambda.min
 best.lambda
 
-# Accuracy
+# Metrics
 predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
 predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 accuracy = accuracy.score(y.train, predicted_classes)
+recall = recall.score(y.train, predicted_classes)
+specificity = specificity.score(y.train, predicted_classes)
 cat("Train accuracy: ", accuracy, "\n")
+cat("Train recall: ", recall, "\n")
+cat("Train specificity: ", specificity, "\n")
 
 predicted_probabilities <- predict(cv.model, newx = x.test, s = "lambda.min", type = "response")
 predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 accuracy = accuracy.score(y.test, predicted_classes)
+recall = recall.score(y.test, predicted_classes)
+specificity = specificity.score(y.test, predicted_classes)
 cat("Test accuracy: ", accuracy, "\n")
+cat("Test recall: ", recall, "\n")
+cat("Test specificity: ", specificity, "\n")
 
 # Plot the regularization path
 mypal = c(RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(6,"Dark2"))
@@ -49,12 +64,51 @@ mypal = c(RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(6,"Dark2
 # ElasticNet
 # Train accuracy:  0.7636719 
 # Test accuracy:  0.7773438
+# Train accuracy:  0.7734375  // Modified dataset 
+# Test accuracy:  0.7695312   // Modified dataset
 #
 # Ridge
 # Train accuracy:  0.7636719 
 # Test accuracy:  0.78125
+# Train accuracy:  0.7695312  // Modified dataset
+# Test accuracy:  0.765625    // Modified dataset
 #
 # Lasso
-#
 # Train accuracy:  0.765625 
 # Test accuracy:  0.7734375 
+# Train accuracy:  0.7714844  // Modified dataset
+# Test accuracy:  0.7695312   // Modified dataset
+#
+# Adalasso
+# Train accuracy:  0.7753906 
+# Test accuracy:  0.7734375 
+
+## ADALASSO
+fit.0 = glm(y.train ~ x.train, family = binomial)
+initial_coefs <- coef(fit.0)
+initial_coefs <- initial_coefs[-1]
+weights <- 1 / abs(initial_coefs)
+weights_matrix <- diag(weights)
+cv.model <- cv.glmnet(x.train, y.train, family = "binomial", alpha = 1, penalty.factor = weights)
+print(coef(cv.model, s = "lambda.min"))
+
+# Metrics
+predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
+predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
+print(table(Predicted = predicted_classes, Actual = y.train))
+accuracy = accuracy.score(y.train, predicted_classes)
+recall = recall.score(y.train, predicted_classes)
+specificity = specificity.score(y.train, predicted_classes)
+cat("Train accuracy: ", accuracy, "\n")
+cat("Train recall: ", recall, "\n")
+cat("Train specificity: ", specificity, "\n")
+
+predicted_probabilities <- predict(cv.model, newx = x.test, s = "lambda.min", type = "response")
+predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
+accuracy = accuracy.score(y.test, predicted_classes)
+recall = recall.score(y.test, predicted_classes)
+specificity = specificity.score(y.test, predicted_classes)
+cat("Test accuracy: ", accuracy, "\n")
+cat("Test recall: ", recall, "\n")
+cat("Test specificity: ", specificity, "\n")
+

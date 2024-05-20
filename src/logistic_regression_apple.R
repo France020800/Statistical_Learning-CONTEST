@@ -28,16 +28,24 @@ best.lambda <- cv.model$lambda.min
 best.lambda
 plot(cv.model)
 
-# Accuracy
+# Metrics
 predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
 predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 accuracy = accuracy.score(y.train, predicted_classes)
+recall = recall.score(y.train, predicted_classes)
+specificity = specificity.score(y.train, predicted_classes)
 cat("Train accuracy: ", accuracy, "\n")
+cat("Train recall: ", recall, "\n")
+cat("Train specificity: ", specificity, "\n")
 
 predicted_probabilities <- predict(cv.model, newx = x.test, s = "lambda.min", type = "response")
 predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 accuracy = accuracy.score(y.test, predicted_classes)
+recall = recall.score(y.test, predicted_classes)
+specificity = specificity.score(y.test, predicted_classes)
 cat("Test accuracy: ", accuracy, "\n")
+cat("Test recall: ", recall, "\n")
+cat("Test specificity: ", specificity, "\n")
 
 # Plot the regularization path
 mypal = c(RColorBrewer::brewer.pal(12,"Set3"), RColorBrewer::brewer.pal(6,"Dark2"))
@@ -51,6 +59,7 @@ legend("topright",fill=mypal,rownames(cv.model$glmnet.fit$beta), xpd=FALSE, cex=
 # Lasso - Train acc: 0.7416573 Test acc: 0.7576894 
 # Ridge - Train acc: 0.7431571 Test acc: 0.7591898 
 # ElasticNet - Train acc: 0.7416573 Test acc: 0.7576894 
+# Adalasso - Train acc: Test acc: 
 
 
 ## ADALASSO
@@ -66,6 +75,7 @@ print(coef(cv.model, s = "lambda.min"))
 predicted_probabilities <- predict(cv.model, newx = x.train, s = "lambda.min", type = "response")
 predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 print(table(Predicted = predicted_classes, Actual = y.train))
+
 accuracy = accuracy.score(y.train, predicted_classes)
 cat("Train accuracy: ", accuracy, "\n")
 
@@ -74,10 +84,5 @@ predicted_classes <- ifelse(predicted_probabilities > 0.5, 1, 0)
 print(table(Predicted = predicted_classes, Actual = y.test))
 accuracy = accuracy.score(y.test, predicted_classes)
 cat("Train accuracy: ", accuracy, "\n")
-
-{plot(fit.adalasso)
-legend("topright",fill=mypal,rownames(cv.model$glmnet.fit$beta), xpd=FALSE, cex=0.8, bty = "n")
-}
-
 
 

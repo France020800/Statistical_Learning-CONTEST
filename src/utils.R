@@ -23,15 +23,15 @@ accuracy.score <- function(y.true, y.prob, prob=TRUE) {
 }
 
 recall.score <- function(y.true, y.prob, prob=TRUE) {
-  true.pos - confusion.matrix(y.true, y.prob, prob)[1, 1]
-  false.neg - confusion.matrix(y.true, y.prob, prob)[1, 2]
+  true.pos <- confusion.matrix(y.true, y.prob, prob)[1, 1]
+  false.neg <- confusion.matrix(y.true, y.prob, prob)[1, 2]
 
   return(true.pos / (true.pos + false.neg))
 }
 
 specificity.score <- function(y.true, y.prob, prob=TRUE) {
-  true.neg - confusion.matrix(y.true, y.prob, prob)[2, 2]
-  false.pos - confusion.matrix(y.true, y.prob, prob)[2, 1]
+  true.neg <- confusion.matrix(y.true, y.prob, prob)[2, 2]
+  false.pos <- confusion.matrix(y.true, y.prob, prob)[2, 1]
 
   return(true.neg / (true.neg + false.pos))
 }
