@@ -33,14 +33,23 @@
 
 {\footnotesize \begin{itemize}
     \item p = 8
-    \item mtry = $\sqrt{p} \simeq 2.83$ 
+    \item mtry = $\sqrt{p} \simeq 3$
+    \item ntree = 500
     \item OOB estimate error rate: $24.41\%$
+\end{itemize}}
+
+\vspace{0.5cm}
+
+\; Model selection:
+{\footnotesize \begin{itemize}
+\item ntree = 111
+    \item min OOB error rate = 0.2343
 \end{itemize}}
 
 \end{column}
 \begin{column}{0.75\textwidth}
 \begin{figure}
-\includegraphics[width=1.05\columnwidth]{diabete_forest_error.pdf}
+\includegraphics[width=1.05\columnwidth]{slide/Figures/forest/diabete_forest_error3.pdf}
 \end{figure}
 \end{column}
 \end{columns}
@@ -48,20 +57,29 @@
 
 % ------------------------------- %
 
-\begin{frame}{Optimal OOB Error}
+\begin{frame}{OOB Error}
 
 \begin{columns}
 \begin{column}{0.35\textwidth}
 {\footnotesize \begin{itemize}
     \item p = 8
     \item mtry = 4 
-    \item min OOB estimate error rate: $22.85\%$
+    \item ntree = 500
+    \item OOB estimate error rate: $25\%$
+\end{itemize}}
+
+\vspace{0.5cm}
+
+\; Model selection:
+{\footnotesize \begin{itemize}
+    \item ntree = 136
+    \item min OOB error rate = 0.2226
 \end{itemize}}
 
 \end{column}
 \begin{column}{0.75\textwidth}
 \begin{figure}
-\includegraphics[width=1.05\columnwidth]{diabete_forest_error_opt.pdf}
+\includegraphics[width=1.05\columnwidth]{slide/Figures/forest/diabete_forest_error4.pdf}
 \end{figure}
 \end{column}
 \end{columns}
@@ -70,10 +88,12 @@
 
 % ------------------------------- %
 
-\begin{frame}{Variable importance}
+\begin{frame}{Variable Importance}
 
 \begin{figure}
-	\hspace*{-2.5em}\includegraphics[width=1.15\textwidth,trim=0 0 0 1.5cm,clip]{./Figures/diabete_var_imp.pdf}
+	\hspace*{-1.5em}\includegraphics[width=0.88\textwidth, height=0.38\columnwidth]{slide/Figures/forest/diabete_var_imp3.pdf}
+	\hspace*{-1.5em}\includegraphics[width=0.88\textwidth, height=0.38\columnwidth]{slide/Figures/forest/diabete_var_imp4.pdf}
 \end{figure}
-
 \end{frame}
+
+% ------------------------------- %
