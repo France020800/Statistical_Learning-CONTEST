@@ -28,7 +28,7 @@ y.train = diab.train$Outcome
 
 ## Regularization
 set.seed(111)
-alpha = 1     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
+alpha = 0     # Lasso = 1 -- Ridge = 0 -- 0 < Elastic < 1
 cv.model = cv.glmnet(x.train, y.train, family = 'binomial', alpha = alpha)
 pdf("../plots/cv_lambda.pdf")
 plot(cv.model)
@@ -116,7 +116,6 @@ dev.off()
 ## ADALASSO
 set.seed(111)
 fit.0 = glm(Outcome ~., family = binomial, data = diab.train)
-initial_coefs <- coef(fit.0)
 initial_coefs <- initial_coefs[-1]
 weights <- 1 / abs(initial_coefs)
 weights_matrix <- diag(weights)
